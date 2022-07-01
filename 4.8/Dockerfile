@@ -7,8 +7,7 @@ RUN groupadd -r rocketchat \
 &&  useradd -r -g rocketchat rocketchat \
 &&  mkdir -p /app/uploads \
 &&  chown rocketchat.rocketchat /app/uploads \
-&& `RUN mkdir ~/.gnupg
-&& echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf
+&&  echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf
 
 VOLUME /app/uploads
 
