@@ -1,4 +1,4 @@
-FROM arm64v8/node
+FROM arm64v8/node:12.22.1-stretch as builder
 
 # crafted and tuned by pierre@ozoux.net and sing.li@rocket.chat
 MAINTAINER buildmaster@rocket.chat
@@ -43,7 +43,7 @@ RUN set -x \
  && npm rebuild bcrypt --build-from-source \
  && npm cache clear --force
 
-FROM arm64v8/node
+FROM arm64v8/node:12.22.1-stretch as builder
 
 RUN groupadd -r rocketchat \
 &&  useradd -r -g rocketchat rocketchat \
