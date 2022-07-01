@@ -1,4 +1,4 @@
-FROM arm64v8/node:14.18.3-stretch as builder
+FROM arm64v8/node:14.18.3
 
 # crafted and tuned by pierre@ozoux.net and sing.li@rocket.chat
 MAINTAINER buildmaster@rocket.chat
@@ -30,20 +30,22 @@ RUN curl -fSL "https://releases.rocket.chat/${RC_VERSION}/download" -o rocket.ch
 &&  rm rocket.chat.tgz rocket.chat.tgz.asc
 ADD . /app
 
-
 RUN set -x \
  && cd /app/bundle/programs/server \
- && npm install \
+ && npm i npm@6.14.5 \
  # Start hack for sharp...
  && rm -rf npm/node_modules/sharp \
- && npm install sharp \
+# && rm -rf npm/node_modules/grpc \
+ && npm install sharp@0.22.1 \
+# && npm install grpc@1.12.2 \
  && mv node_modules/sharp npm/node_modules/sharp \
+# && mv node_modules/grpc npm/node_modules/grpc \
  # End hack for sharp
  && cd npm \
  && npm rebuild bcrypt --build-from-source \
  && npm cache clear --force
 
-FROM arm64v8/node:14.18.3-stretch as builder
+FROM arm64v8/node
 
 RUN groupadd -r rocketchat \
 &&  useradd -r -g rocketchat rocketchat \
