@@ -1,4 +1,4 @@
-FROM arm64v8/node:12.22.1-stretch as builder
+FROM arm64v8/node:14.18.3-stretch as builder
 
 # crafted and tuned by pierre@ozoux.net and sing.li@rocket.chat
 MAINTAINER buildmaster@rocket.chat
@@ -16,11 +16,11 @@ RUN gpg --batch --keyserver keyserver.ubuntu.com --recv-keys  0E163286C20D07B978
 
  
 
-ENV RC_VERSION 2.4.9
+ENV RC_VERSION 4.8.1
 
 WORKDIR /app
 
-RUN apt-get update && apt-get -y install g++ build-essential
+RUN apt-get update && apt-get -y install g++
 RUN apt-get update && apt-get -y upgrade
 RUN apt-get install -y curl ca-certificates imagemagick --no-install-recommends 
 RUN apt-get install libstdc++6
@@ -35,20 +35,17 @@ ADD . /app
 
 RUN set -x \
  && cd /app/bundle/programs/server \
- && npm install \
+ && npm -i 6.14.15 \
  # Start hack for sharp...
- && rm -rf npm/node_modules/sharp \
-# && rm -rf npm/node_modules/grpc \
+ #&& rm -rf npm/node_modules/sharp \
  && npm install sharp@0.22.1 \
-# && npm install grpc@1.12.2 \
- && mv node_modules/sharp npm/node_modules/sharp \
-# && mv node_modules/grpc npm/node_modules/grpc \
+ #&& mv node_modules/sharp npm/node_modules/sharp \
  # End hack for sharp
  && cd npm \
  && npm rebuild bcrypt --build-from-source \
  && npm cache clear --force
 
-FROM arm64v8/node:12.22.1-stretch
+FROM arm64v8/node:14.18.3-stretch
 
 RUN groupadd -r rocketchat \
 &&  useradd -r -g rocketchat rocketchat \
