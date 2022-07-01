@@ -35,7 +35,7 @@ ADD . /app
 
 RUN set -x \
  && cd /app/bundle/programs/server \
- && npm -i 6.14.15 \
+ && npm i npm@6.14.5 \
  # Start hack for sharp...
  #&& rm -rf npm/node_modules/sharp \
  && npm install sharp@0.22.1 \
