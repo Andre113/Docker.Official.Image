@@ -1,4 +1,4 @@
-FROM arm64v8/node:14.18.3
+FROM arm64v8/node:12.22.1-stretch as builder
 
 # crafted and tuned by pierre@ozoux.net and sing.li@rocket.chat
 MAINTAINER buildmaster@rocket.chat
@@ -7,14 +7,16 @@ RUN groupadd -r rocketchat \
 &&  useradd -r -g rocketchat rocketchat \
 &&  mkdir -p /app/uploads \
 &&  chown rocketchat.rocketchat /app/uploads \
-&&  echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf
+&& echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf
 
 VOLUME /app/uploads
 
 # gpg: key 4FD08014: public key "Rocket.Chat Buildmaster <buildmaster@rocket.chat>" imported
 RUN gpg --batch --keyserver keyserver.ubuntu.com --recv-keys  0E163286C20D07B9787EBE9FD7F9D0414FD08104
 
-ENV RC_VERSION 4.8.1
+ 
+
+ENV RC_VERSION 2.4.9
 
 WORKDIR /app
 
@@ -30,10 +32,10 @@ RUN curl -fSL "https://releases.rocket.chat/${RC_VERSION}/download" -o rocket.ch
 &&  rm rocket.chat.tgz rocket.chat.tgz.asc
 ADD . /app
 
+
 RUN set -x \
  && cd /app/bundle/programs/server \
- && npm i npm@6.14.5 \
- && npm install fibers@4 \
+ && npm install \
  # Start hack for sharp...
  && rm -rf npm/node_modules/sharp \
 # && rm -rf npm/node_modules/grpc \
@@ -46,7 +48,7 @@ RUN set -x \
  && npm rebuild bcrypt --build-from-source \
  && npm cache clear --force
 
-FROM arm64v8/node
+FROM arm64v8/node:12.22.1-stretch
 
 RUN groupadd -r rocketchat \
 &&  useradd -r -g rocketchat rocketchat \
